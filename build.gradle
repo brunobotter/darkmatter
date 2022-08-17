@@ -51,9 +51,6 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        api group: 'io.github.libktx', name: 'ktx-app', version: ktxVersion
-        api group: 'io.github.libktx', name: 'ktx-log', version: ktxVersion
-        api group: 'io.github.libktx', name: 'ktx-graphics', version: ktxVersion
     }
 }
 
@@ -72,9 +69,6 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
         api "com.badlogicgames.ashley:ashley:$ashleyVersion"
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-        api group: 'io.github.libktx', name: 'ktx-app', version: ktxVersion
-        api group: 'io.github.libktx', name: 'ktx-log', version: ktxVersion
-        api group: 'io.github.libktx', name: 'ktx-graphics', version: ktxVersion
 
     }
 }
@@ -92,5 +86,6 @@ project(":core") {
         api "io.github.libktx:ktx-log:$ktxVersion"
         api "io.github.libktx:ktx-graphics:$ktxVersion"
         api "io.github.libktx:ktx-math:$ktxVersion"
+        api "io.github.libktx:ktx-collections:$ktxVersion"
        }
 }
