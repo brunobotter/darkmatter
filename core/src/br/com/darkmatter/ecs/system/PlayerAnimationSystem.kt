@@ -14,12 +14,12 @@ import ktx.ashley.get
 
 class PlayerAnimationSystem(
     private val defaultRegion: TextureRegion,
-    private val lefttRegion: TextureRegion,
+    private val leftRegion: TextureRegion,
     private val rightRegion: TextureRegion
-): IteratingSystem(allOf(PlayerComponent::class, FacingComponent::class, GraphicComponent::class).get()),
-EntityListener{
-
+) : IteratingSystem(allOf(PlayerComponent::class, FacingComponent::class, GraphicComponent::class).get()),
+    EntityListener {
     private var lastDirection = FacingDirection.DEFAULT
+
     override fun addedToEngine(engine: Engine) {
         super.addedToEngine(engine)
         engine.addEntityListener(family, this)
@@ -30,26 +30,29 @@ EntityListener{
         engine.removeEntityListener(this)
     }
 
+    override fun processEntity(entity: Entity, deltaTime: Float) {
+        val facing = entity[FacingComponent.mapper]
+        require(facing != null) { "Entity |entity| must have a FacingComponent. entity=$entity" }
+        val graphic = entity[GraphicComponent.mapper]
+        require(graphic != null) { "Entity |entity| must have a GraphicComponent. entity=$entity" }
+
+        if (facing.direction == lastDirection && graphic.sprite.texture != null) {
+            // texture already set and direction does not change
+            return
+        }
+
+        lastDirection = facing.direction
+        val region = when (facing.direction) {
+            FacingDirection.RIGHT -> rightRegion
+            FacingDirection.LEFT -> leftRegion
+            else -> defaultRegion
+        }
+        graphic.setSpriteRegion(region)
+    }
+
     override fun entityAdded(entity: Entity) {
         entity[GraphicComponent.mapper]?.setSpriteRegion(defaultRegion)
     }
 
-    override fun entityRemoved(entity: Entity) = Unit
-
-    override fun processEntity(entity: Entity, deltaTime: Float) {
-        val facing: FacingComponent? =  entity[FacingComponent.mapper]
-        require(facing!=null){"Entity |entity| must have a FacingComponent. entity=$entity"}
-        val grapgic: GraphicComponent? = entity[GraphicComponent.mapper]
-        require(grapgic != null) { "Entity |entity| must have a transform component entity=$entity" }
-        if(facing.direction == lastDirection && grapgic.sprite.texture != null){
-            return
-        }
-        lastDirection = facing.direction
-        var region: TextureRegion = when(facing.direction){
-            FacingDirection.LEFT -> lefttRegion
-            FacingDirection.RIGHT -> rightRegion
-            else -> defaultRegion
-        }
-        grapgic.setSpriteRegion(region)
-    }
+    override fun entityRemoved(entity: Entity?) = Unit
 }

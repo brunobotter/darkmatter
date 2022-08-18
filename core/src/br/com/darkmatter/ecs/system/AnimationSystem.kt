@@ -16,7 +16,7 @@ private val LOG = logger<AnimationSystem>()
 
 class AnimationSystem(
     private val atlas: TextureAtlas
-) : IteratingSystem(allOf(AnimationComponent::class, GraphicComponent::class).get()), EntityListener{
+) : IteratingSystem(allOf(AnimationComponent::class, GraphicComponent::class).get()), EntityListener {
     private val animationCache = EnumMap<AnimationType, Animation2D>(AnimationType::class.java)
 
     override fun addedToEngine(engine: Engine) {
@@ -31,51 +31,52 @@ class AnimationSystem(
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val aniCmp = entity[AnimationComponent.mapper]
-        require(aniCmp != null) { "Entity |entity| must have a FacingComponent. entity=$entity" }
-        val graphics = entity[GraphicComponent.mapper]
-        require(graphics != null) { "Entity |entity| must have a FacingComponent. entity=$entity" }
-        if(aniCmp.type == AnimationType.NONE){
-            LOG.error { "No type  specified for animation component $aniCmp for |entity| $entity" }
+        require(aniCmp != null) { "Entity |entity| must have an AnimationComponent. entity=$entity" }
+        val graphic = entity[GraphicComponent.mapper]
+        require(graphic != null) { "Entity |entity| must have a GraphicComponent. entity=$entity" }
+
+        if (aniCmp.type == AnimationType.NONE) {
+            LOG.error { "No aniCmp type specified" }
             return
         }
-        if(aniCmp.type == aniCmp.animation.type){
-            //animation is correctly set -> update if
+
+        if (aniCmp.animation.type == aniCmp.type) {
+            // animation is correct -> update it
             aniCmp.stateTime += deltaTime
-        }else{
-            //change animation
+        } else {
+            // change animation
             aniCmp.stateTime = 0f
             aniCmp.animation = getAnimation(aniCmp.type)
         }
+
         val frame = aniCmp.animation.getKeyFrame(aniCmp.stateTime)
-        graphics.setSpriteRegion(frame)
-    }
-
-    override fun entityAdded(entity: Entity) {
-        entity[AnimationComponent.mapper]?.let{ aniCmp ->
-            aniCmp.animation = getAnimation(aniCmp.type)
-            val frame = aniCmp.animation.getKeyFrame(aniCmp.stateTime)
-            entity[GraphicComponent.mapper]?.setSpriteRegion(frame)
-        }
-
+        graphic.setSpriteRegion(frame)
     }
 
     private fun getAnimation(type: AnimationType): Animation2D {
         var animation = animationCache[type]
-        if(animation == null){
+        if (animation == null) {
             var regions = atlas.findRegions(type.atlasKey)
-            if(regions.isEmpty){
-                LOG.error { "No regions founds for ${type.atlasKey}" }
+            if (regions.isEmpty) {
+                LOG.error { "No regions found for ${type.atlasKey}" }
                 regions = atlas.findRegions("error")
-                if(regions.isEmpty) throw  GdxRuntimeException("There is no error region in the atlas")
-            }else{
-                LOG.debug { "Adding animation of type $type with ${regions.size} regions"  }
+                if (regions.isEmpty) throw GdxRuntimeException("There is no error region in the game atlas")
+            } else {
+                LOG.debug { "Adding animation of type $type with ${regions.size} regions" }
             }
-            animation = Animation2D(type, regions, type.playMode, type.speedRate)
+            animation = Animation2D(type, regions, type.playMode, type.speed)
             animationCache[type] = animation
         }
         return animation
     }
 
-    override fun entityRemoved(entity: Entity) {
+    override fun entityRemoved(entity: Entity?) = Unit
+
+    override fun entityAdded(entity: Entity) {
+        entity[AnimationComponent.mapper]?.let { aniCmp ->
+            aniCmp.animation = getAnimation(aniCmp.type)
+            val frame = aniCmp.animation.getKeyFrame(aniCmp.stateTime)
+            entity[GraphicComponent.mapper]?.setSpriteRegion(frame)
+        }
     }
 }

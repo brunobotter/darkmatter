@@ -87,5 +87,12 @@ project(":core") {
         api "io.github.libktx:ktx-graphics:$ktxVersion"
         api "io.github.libktx:ktx-math:$ktxVersion"
         api "io.github.libktx:ktx-collections:$ktxVersion"
+        api "io.github.libktx:ktx-actors:$ktxVersion"
+        api "io.github.libktx:ktx-style:$ktxVersion"
+        api "io.github.libktx:ktx-assets-async:$ktxVersion"
+        api "io.github.libktx:ktx-i18n:$ktxVersion"
+        api "io.github.libktx:ktx-preferences:$ktxVersion"
+        api "io.github.libktx:ktx-scene2d:$ktxVersion"
+
        }
 }

@@ -14,8 +14,8 @@ class FacingComponent: Component, Pool.Poolable {
         direction = FacingDirection.DEFAULT
     }
 
-    companion object{
-        val mapper: ComponentMapper<FacingComponent> = mapperFor<FacingComponent>()
+    companion object {
+        val mapper = mapperFor<FacingComponent>()
     }
 }
 
